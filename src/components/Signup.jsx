@@ -23,6 +23,8 @@ export default function Signup() {
 
         data.acquisition = acquisitionChannel
         console.log(data);
+
+        event.target.reset(); // Imperative 
     }
     return (
         <form onSubmit={handleSubmit}>
@@ -111,6 +113,8 @@ export default function Signup() {
         </div>
 
         <p className="form-actions">
+            {/* Reset button autimatically resets all the input fields because its type is 'reset' */}
+            {/* or we can also reset the form using FormData in built properties */}
             <button type="reset" className="button button-flat">
             Reset
             </button>
