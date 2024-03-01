@@ -6,6 +6,11 @@ export default function StateLogin() {
         password: ''
     });
 
+    const [ didEdit, setDidEdit ] = useState({
+        email: false,
+        password: false
+    });
+
     function handleSubmit(event){
         event.preventDefault();
 
@@ -13,15 +18,31 @@ export default function StateLogin() {
             email: '',
             password: ''
         });
+        setDidEdit({
+            email: false,
+            password: false
+        });
     }
 
-    const emailIsInvalid = enteredValues.email!=='' && !enteredValues.email.includes('@');
+    const emailIsInvalid = didEdit.email && !enteredValues.email.includes('@');
 
     function handleInputChange(identifier, value){
         setEnteredValues(prevValues => ({
         ...prevValues,
         [identifier]: value
         // dynamically accessing a property by adding square brackets around the variable [var]
+        }))
+
+        setDidEdit(prevValues=>({
+            ...prevValues,
+            [identifier]: false
+        }))
+    }
+
+    function handleInputBlur(identifier){
+        setDidEdit(prevValues=>({
+            ...prevValues,
+            [identifier]: true
         }))
     }
 
@@ -32,14 +53,21 @@ export default function StateLogin() {
         <div className="control-row">
             <div className="control no-margin">
             <label htmlFor="email">Email</label>
-            <input id="email" type="email" name="email" value={enteredValues.email} 
-            onChange={(event)=>handleInputChange('email', event.target.value)}/>
+            <input 
+                id="email" 
+                type="email" 
+                name="email" 
+                // onBlur is an event listening prop. It is a built in default browser event that will fire whenever this input will lose focus
+                onBlur={()=>handleInputBlur('email')}
+                value={enteredValues.email} 
+                onChange={(event)=>handleInputChange('email', event.target.value)}
+            />
             </div>
 
 
             <div className="control no-margin">
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" name="password" value={enteredValues.password} 
+            <input id="password" type="password" name="password" onBlur={()=>handleInputBlur('password')} value={enteredValues.password} 
             onChange={(event)=>handleInputChange('password', event.target.value)}/>
             </div>
         </div>
