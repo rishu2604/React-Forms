@@ -1,8 +1,10 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-export default function Login() {
+export default function RefsLogin() {
     const email = useRef();
     const password = useRef();
+
+    const [ emailIsInvalid, setEmailIsInvalid ] = useState(false);
 
     function handleSubmit(event){
         event.preventDefault();
@@ -12,8 +14,19 @@ export default function Login() {
 
         console.log(enteredEmail, enteredPassword);
 
-        email.current.value('');
-        password.current.value('');
+        const emailIsValid = enteredEmail.includes('@');
+
+        if(!emailIsValid){
+            setEmailIsInvalid(true);
+            return; // We may not want to execute the further code, so put a return statement
+        }
+
+        setEmailIsInvalid(false);
+
+        email.current.value = '';
+        password.current.value = ''; 
+
+        console.log("Sending HTTP requests...");
     }
 
     return (
@@ -24,6 +37,9 @@ export default function Login() {
             <div className="control no-margin">
             <label htmlFor="email">Email</label>
             <input id="email" type="email" name="email" ref={email}/>
+            <div className="control-error">
+                {emailIsInvalid && <p>Please enter a valid email address</p>}
+            </div>
             </div>
 
             <div className="control no-margin">

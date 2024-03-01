@@ -11,8 +11,22 @@ export default function StateLogin() {
         password: false
     });
 
+    const [ emailIsValid, setEmailIsValid ] = useState(true);
+
+    // Validating on every keystroke
+    // const emailIsInvalid = enteredValues.email!=='' && !enteredValues.email.includes('@');
+
+    const emailIsInvalid = didEdit.email && !enteredValues.email.includes('@');
+
     function handleSubmit(event){
         event.preventDefault();
+
+        // Add validation here too because user can ignore the error and can still submit the form
+        if(emailIsInvalid){
+            setEmailIsValid(false);
+            console.log("Check credentials")
+            return;
+        }
 
         setEnteredValues({
             email: '',
@@ -22,9 +36,12 @@ export default function StateLogin() {
             email: false,
             password: false
         });
+
+        setEmailIsValid(true);
+
+        console.log('Sending HTTP request...')
     }
 
-    const emailIsInvalid = didEdit.email && !enteredValues.email.includes('@');
 
     function handleInputChange(identifier, value){
         setEnteredValues(prevValues => ({
@@ -62,6 +79,9 @@ export default function StateLogin() {
                 value={enteredValues.email} 
                 onChange={(event)=>handleInputChange('email', event.target.value)}
             />
+            <div className="control-error">
+                {emailIsInvalid && <p>Please enter a valid email address</p>}
+            </div>
             </div>
 
 
@@ -70,9 +90,6 @@ export default function StateLogin() {
             <input id="password" type="password" name="password" onBlur={()=>handleInputBlur('password')} value={enteredValues.password} 
             onChange={(event)=>handleInputChange('password', event.target.value)}/>
             </div>
-        </div>
-        <div className="control-error">
-            {emailIsInvalid && <p>Please enter a valid email address</p>}
         </div>
 
 
