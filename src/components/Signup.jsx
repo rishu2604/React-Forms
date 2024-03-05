@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 export default function Signup() {
+    const [ passwordsAreNotEqual, setPasswordsAreNotEqual] = useState(false);
+
     function handleSubmit(event){
         event.preventDefault();
 
@@ -22,6 +26,12 @@ export default function Signup() {
         // It gives data in key value pair
 
         data.acquisition = acquisitionChannel
+
+        // We have to use square brackets because else it will give error because of dash symbol in between confirm-password
+        if(data.password !== data['confirm-password']){
+            setPasswordsAreNotEqual(true);
+            return;
+        }
         console.log(data);
 
         event.target.reset(); // Imperative 
@@ -43,12 +53,15 @@ export default function Signup() {
             </div>
 
             <div className="control">
-            <label htmlFor="confirm-password">Confirm Password</label>
-            <input
-                id="confirm-password"
-                type="password"
-                name="confirm-password"
-            />
+                <label htmlFor="confirm-password">Confirm Password</label>
+                <input
+                    id="confirm-password"
+                    type="password"
+                    name="confirm-password"
+                />
+                <div className="control-error">
+                    {passwordsAreNotEqual && <p>Passwords must match.</p>}
+                </div>
             </div>
         </div>
 

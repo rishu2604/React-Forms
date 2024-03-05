@@ -1,95 +1,122 @@
-import { useState } from "react";
+import Input from "./Input";
+import { hasMinLength, isEmail, isNotEmpty } from "../util/validation";
+import { useInput } from "../hooks/useInput";
+
+// We want to outsource the handleInputBlur and handleInputChange functions too
+// But we can't use them as a regular function
+// Because we are managing states here
+// we have to make a custom hook to do that
 
 export default function StateLogin() {
-    const [ enteredValues, setEnteredValues ] = useState({
-        email: '',
-        password: ''
-    });
+    // const [ enteredValues, setEnteredValues ] = useState({
+    //     email: '',
+    //     password: ''
+    // });
 
-    const [ didEdit, setDidEdit ] = useState({
-        email: false,
-        password: false
-    });
+    // const [ didEdit, setDidEdit ] = useState({
+    //     email: false,
+    //     password: false
+    // });
 
-    const [ emailIsValid, setEmailIsValid ] = useState(true);
+    const {
+        value: emailValue,
+        handleInputChange: handleEmailChange,
+        handleInputBlur: handleEmailBlur,
+        hasError: emailHasError
+    } = useInput('', (value) => isEmail(value) && isNotEmpty(value));
+
+    const {
+        value: passwordValue,
+        handleInputChange: handlePasswordChange,
+        handleInputBlur: handlePasswordBlur,
+        hasError: passwordHasError
+    } = useInput('', (value) => hasMinLength(value, 6));
+
+    // const [ emailIsValid, setEmailIsValid ] = useState(true);
 
     // Validating on every keystroke
     // const emailIsInvalid = enteredValues.email!=='' && !enteredValues.email.includes('@');
 
-    const emailIsInvalid = didEdit.email && !enteredValues.email.includes('@');
+    // const emailIsInvalid = didEdit.email && !isEmail(enteredValues.email) && isNotEmpty(enteredValues.email);
+    // const passwordIsInvalid = didEdit.password && !hasMinLength(enteredValues.password, 6);
 
     function handleSubmit(event){
         event.preventDefault();
 
         // Add validation here too because user can ignore the error and can still submit the form
-        if(emailIsInvalid){
-            setEmailIsValid(false);
-            console.log("Check credentials")
+        // if(emailIsInvalid){
+        //     setEmailIsValid(false);
+        //     console.log("Check credentials")
+        //     return;
+        // }
+
+        if(emailHasError || passwordHasError){
+            console.log("Check credentials");
             return;
         }
 
-        setEnteredValues({
-            email: '',
-            password: ''
-        });
-        setDidEdit({
-            email: false,
-            password: false
-        });
+        console.log(emailValue, passwordValue);
 
-        setEmailIsValid(true);
+        // setEnteredValues({
+        //     email: '',
+        //     password: ''
+        // });
+        // setDidEdit({
+        //     email: false,
+        //     password: false
+        // });
+
+        // setEmailIsValid(true);
 
         console.log('Sending HTTP request...')
     }
 
 
-    function handleInputChange(identifier, value){
-        setEnteredValues(prevValues => ({
-        ...prevValues,
-        [identifier]: value
-        // dynamically accessing a property by adding square brackets around the variable [var]
-        }))
+    // function handleInputChange(identifier, value){
+    //     setEnteredValues(prevValues => ({
+    //     ...prevValues,
+    //     [identifier]: value
+    //     // dynamically accessing a property by adding square brackets around the variable [var]
+    //     }))
 
-        setDidEdit(prevValues=>({
-            ...prevValues,
-            [identifier]: false
-        }))
-    }
+    //     setDidEdit(prevValues=>({
+    //         ...prevValues,
+    //         [identifier]: false
+    //     }))
+    // }
 
-    function handleInputBlur(identifier){
-        setDidEdit(prevValues=>({
-            ...prevValues,
-            [identifier]: true
-        }))
-    }
+    // function handleInputBlur(identifier){
+    //     setDidEdit(prevValues=>({
+    //         ...prevValues,
+    //         [identifier]: true
+    //     }))
+    // }
 
     return (
         <form onSubmit={handleSubmit}>
         <h2>Login</h2>
 
         <div className="control-row">
-            <div className="control no-margin">
-            <label htmlFor="email">Email</label>
-            <input 
-                id="email" 
+            <Input 
+                label="Email" 
                 type="email" 
-                name="email" 
-                // onBlur is an event listening prop. It is a built in default browser event that will fire whenever this input will lose focus
-                onBlur={()=>handleInputBlur('email')}
-                value={enteredValues.email} 
-                onChange={(event)=>handleInputChange('email', event.target.value)}
+                id="email" 
+                name="email"
+                onBlur={handleEmailBlur}
+                value={emailValue} 
+                onChange={handleEmailChange}
+                error={emailHasError && 'Please enter a valid email address.'} 
             />
-            <div className="control-error">
-                {emailIsInvalid && <p>Please enter a valid email address</p>}
-            </div>
-            </div>
-
-
-            <div className="control no-margin">
-            <label htmlFor="password">Password</label>
-            <input id="password" type="password" name="password" onBlur={()=>handleInputBlur('password')} value={enteredValues.password} 
-            onChange={(event)=>handleInputChange('password', event.target.value)}/>
-            </div>
+            <Input 
+                label="Password" 
+                type="password" 
+                id="password" 
+                name="password"
+                onBlur={handlePasswordBlur}
+                value={passwordValue} 
+                onChange={handlePasswordChange}
+                error={passwordHasError && 'Please enter a password having at least 6 characters'}
+            />
         </div>
 
 
